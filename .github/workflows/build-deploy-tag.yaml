@@ -13,6 +13,7 @@ jobs:
       NEXT_PUBLIC_GOOGLE_ANALYTICS_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_ANALYTICS_KEY }}
       AWS_ECR_URL: ${{ secrets.AWS_ECR_URL }}
       EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+      KUBE_CONFIG_DATA:  ${{ secrets.KUBE_CONFIG_DATA }}
     runs-on: ubuntu-latest
     name: Build Deploy
     environment:
@@ -21,11 +22,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Set Environment
       run: |
-         echo DOCKER_ENV_TAG=production-$GITHUB_SHA >> $GITHUB_ENV
-    - name: load env
-      run: |
-          cat ".github/env.common" >>$GITHUB_ENV
-          cat ".github/env.production" >>$GITHUB_ENV
+        echo DOCKER_ENV_TAG=production-$GITHUB_SHA >> $GITHUB_ENV
+        cat ".github/env.common" >>$GITHUB_ENV
+        cat ".github/env.production" >>$GITHUB_ENV
 
     - name: Build
       uses: ./.github/actions/build
@@ -47,4 +46,3 @@ jobs:
             --set environment.next_public_google_analytics_key=${NEXT_PUBLIC_GOOGLE_ANALYTICS_KEY} \
             --set environment.next_public_near_env=${NEXT_PUBLIC_NEAR_ENV} \
             --set ingress.host=${K8S_INGRESS_HOST}
-
